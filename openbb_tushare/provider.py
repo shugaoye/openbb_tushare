@@ -2,11 +2,12 @@
 
 from openbb_core.provider.abstract.provider import Provider
 from openbb_tushare.models.example import ExampleFetcher
+from openbb_tushare.models.available_indices import TushareAvailableIndicesFetcher
 
 # mypy: disable-error-code="list-item"
 
 provider = Provider(
-    name="openbb_tushare",
+    name="tushare",
     description="Data provider for openbb_tushare.",
     # Only add 'credentials' if they are needed.
     # For multiple login details, list them all here.
@@ -16,5 +17,6 @@ provider = Provider(
     # The dictionary key is the fetcher's name, used in the `router.py`.
     fetcher_dict={
         "Example": ExampleFetcher,
+        "AvailableIndices": TushareAvailableIndicesFetcher,
     }
 )
