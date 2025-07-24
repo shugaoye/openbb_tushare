@@ -9,9 +9,7 @@ from openbb_tushare.models.available_indices import TushareAvailableIndicesFetch
 provider = Provider(
     name="tushare",
     description="Data provider for openbb_tushare.",
-    # Only add 'credentials' if they are needed.
-    # For multiple login details, list them all here.
-    # credentials=["api_key"],
+    credentials=["api_key"],
     website="https://openbb_tushare.com",
     # Here, we list out the fetchers showing what our provider can get.
     # The dictionary key is the fetcher's name, used in the `router.py`.

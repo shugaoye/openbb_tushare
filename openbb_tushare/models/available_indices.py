@@ -58,7 +58,7 @@ class TushareAvailableIndicesFetcher(
         from openbb_tushare.utils.ts_available_indices import get_available_indices
         api_key = credentials.get("tushare_api_key") if credentials else ""
 
-        return get_available_indices(query.use_cache).to_dict(orient="records")
+        return get_available_indices(query.use_cache, api_key=api_key).to_dict(orient="records")
 
     @staticmethod
     def transform_data(
