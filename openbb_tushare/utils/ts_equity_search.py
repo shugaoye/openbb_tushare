@@ -8,8 +8,8 @@ from openbb_tushare.utils.table_cache import TableCache
 from openbb_tushare.utils.tools import setup_logger
 
 TABLE_SCHEMA = {
-    "symbol": "TEXT PRIMARY KEY",  # Unique identifier for the asset
-    "ts_code": "TEXT",             # Trading symbol/code 
+    "ts_code": "TEXT PRIMARY KEY",  # Trading symbol/code 
+    "symbol": "TEXT",               # Symbol (e.g. 600000)
     "name": "TEXT",                 # Short name of the asset
     "area": "TEXT",                 # Geographic region
     "industry": "TEXT",             # Industry classification
@@ -25,6 +25,8 @@ TABLE_SCHEMA = {
     "is_hs": "TEXT",                # Hong Kong Connect eligibility (N/H/S)
     "act_name": "TEXT",             # Actual controller name
     "act_ent_type": "TEXT",         # Controller entity type
+    "trade_unit": "TEXT",           # Trading unit (e.g. 100 shares)
+    "isin": "TEXT",                 # International Securities Identification Number
 }
 
 setup_logger()
@@ -39,7 +41,7 @@ def get_symbols(use_cache: bool = True, api_key : str = "") -> pd.DataFrame:
     if tushare_api_key is None:
         raise ValueError("TUSHARE_API_KEY environment variable not set.")
 
-    cache = TableCache(TABLE_SCHEMA, table_name="symbols")
+    cache = TableCache(TABLE_SCHEMA, table_name="symbols", primary_key="ts_code")
     if use_cache:
         data = cache.read_dataframe()
         if not data.empty:
@@ -48,6 +50,10 @@ def get_symbols(use_cache: bool = True, api_key : str = "") -> pd.DataFrame:
 
     logger.info(f"Generating symbols ...")
     pro = ts.pro_api(tushare_api_key)
-    data = pro.stock_basic(exchange='', list_status='L', fields='ts_code,symbol,name,area,industry,fullname,enname,cnspell,market,exchange,curr_type,list_status,list_date,delist_date,is_hs,act_name,act_ent_type')
-    cache.write_dataframe(data)
-    return data
+    df_hk = pro.hk_basic()
+    df_hk['symbol'] = df_hk['ts_code'].str.replace('.HK', '', regex=False)
+    df_hk['exchange'] = 'HKEX'
+    df_cn = pro.stock_basic(exchange='', list_status='L', fields='ts_code,symbol,name,area,industry,fullname,enname,cnspell,market,exchange,curr_type,list_status,list_date,delist_date,is_hs,act_name,act_ent_type')
+    df_all = pd.concat([df_cn, df_hk], ignore_index=True)
+    cache.write_dataframe(df_all)
+    return df_all
