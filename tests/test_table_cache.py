@@ -3,13 +3,18 @@ import pandas as pd
 from openbb_tushare.utils.table_cache import TableCache
 
 @pytest.fixture
-def table_cache():
+def test_db_path(tmp_path):
+    return str(tmp_path / "tushare_equity_info.db")
+
+@pytest.fixture
+def table_cache(test_db_path):
     table_schema = {
         'symbol': 'TEXT',
         'name': 'TEXT',
         'price': 'REAL'
     }
-    db_path = ':memory:'
+    #db_path = ':memory:'
+    db_path = test_db_path
     table_name = 'equity_info'
     cache = TableCache(table_schema, db_path, table_name)
     test_data = pd.DataFrame({

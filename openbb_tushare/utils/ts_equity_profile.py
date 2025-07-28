@@ -9,6 +9,7 @@ from typing import Optional, Union
 from openbb_tushare.utils.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
 from openbb_tushare.utils.tools import normalize_symbol
+from openbb_tushare.utils.table_cache import TableCache
 
 setup_logger()
 logger = logging.getLogger(__name__)
@@ -45,7 +46,65 @@ EQUITY_INFO_SCHEMA = {
     "curr_type": "TEXT"          # 货币代码 (Currency)
 }
 
-def get_one(ts_code : str, use_cache: bool = True, api_key : str = "") -> pd.DataFrame:
+def get_hk_data(ts_code: str, pro, cache: TableCache) -> pd.DataFrame:
+    a_fields = {
+        'ts_code': ts_code,
+        'com_id': '',
+        'exchange': '',
+        'chairman': '',
+        'manager': '',
+        'secretary': '',
+        'reg_capital': 0.0,
+        'setup_date': '',
+        'province': '',
+        'city': '',
+        'introduction': '',
+        'website': '',
+        'email': '',
+        'office': '',
+        'employees': 0,
+        'main_business': '',
+        'business_scope': ''
+    }
+
+    data_hk = pro.hk_basic(ts_code=ts_code)
+    if data_hk.empty:
+        logger.warning(f"No equity profile data found for HK stock {ts_code}.")
+        return pd.DataFrame()
+
+    data_a = pd.DataFrame([a_fields])
+    combined_data = pd.merge(data_hk, data_a, on=['ts_code'], how='outer')
+    cache.update_or_insert(combined_data)
+    return combined_data
+
+def get_ss_data(ts_code: str, pro, cache: TableCache) -> pd.DataFrame:
+    csv_fields = "ts_code,com_name,com_id,exchange,chairman,manager,secretary,reg_capital,setup_date,province,city,introduction,website,email,office,employees,main_business,business_scope"
+    data = pro.stock_company(ts_code=ts_code, fields=csv_fields)
+    if data.empty:
+        logger.warning(f"No equity profile data found for HK stock {ts_code}.")
+        return data
+
+    data = data.rename(columns={'com_name': 'name'})
+
+    hk_fields = {
+        'ts_code': ts_code,
+        'fullname': '',
+        'enname': '',
+        'cn_spell': '',
+        'market': '',
+        'list_status': '',
+        'list_date': '',
+        'delist_date': '',
+        'trade_unit': 0.0,
+        'isin': '',
+        'curr_type': ''
+    }
+    data_hk = pd.DataFrame([hk_fields])
+    combined_data = pd.merge(data_hk, data, on=['ts_code'], how='outer')
+    cache.update_or_insert(combined_data)
+    return combined_data
+
+def get_equity_profile(ts_code: str, api_key: str = "", use_cache: bool = True) -> pd.DataFrame:
     """
     Retrieves equity profile data from a cache or downloads it from the data source.
     
@@ -57,6 +116,25 @@ def get_one(ts_code : str, use_cache: bool = True, api_key : str = "") -> pd.Dat
     Returns:
         DataFrame: DataFrame containing equity profile data.
     """
-    from openbb_tushare.utils.table_cache import TableCache
+
+    cache = TableCache(EQUITY_INFO_SCHEMA, table_name="equity_profile", primary_key="ts_code")
+    if use_cache:
+        filters = {'ts_code': ts_code}
+        data = cache.read_rows(filters)
+
+        if not data.empty:
+            logger.info(f"Loading equity profile {ts_code} from cache...")
+            return data
+
+    tushare_api_key = get_api_key(api_key)
+    pro = ts.pro_api(tushare_api_key)
+    symbol_b, symbol, market = normalize_symbol(ts_code)
+    df_data = pd.DataFrame()
+    if market == 'HK':
+        df_data = get_hk_data(ts_code, pro, cache)
+    else:
+        df_data = get_ss_data(ts_code, pro, cache)
+
+    return df_data
 
     
