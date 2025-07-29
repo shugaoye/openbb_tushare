@@ -6,6 +6,7 @@ from openbb_tushare.models.equity_historical import TushareEquityHistoricalFetch
 from openbb_tushare.models.equity_profile import TushareEquityProfileFetcher
 from openbb_tushare.models.equity_quote import TushareEquityQuoteFetcher
 from openbb_tushare.models.equity_search import TushareEquitySearchFetcher
+from openbb_tushare.models.historical_dividends import TushareHistoricalDividendsFetcher
 
 # mypy: disable-error-code="list-item"
 
@@ -22,5 +23,6 @@ provider = Provider(
         "EquityInfo": TushareEquityProfileFetcher,
         "EquityQuote": TushareEquityQuoteFetcher,
         "EquitySearch": TushareEquitySearchFetcher,
+        "HistoricalDividends": TushareHistoricalDividendsFetcher,
     }
 )

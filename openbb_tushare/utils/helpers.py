@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
+from typing import Optional, Union
 
-def get_api_key(api_key : str = "") -> str:
+def get_api_key(api_key : Optional[str] = "") -> str:
     if api_key:
         tushare_api_key = api_key
     else:
