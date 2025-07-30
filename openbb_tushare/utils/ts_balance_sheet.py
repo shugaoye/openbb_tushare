@@ -43,5 +43,7 @@ def get_tushare_data(
         balancesheet_df = pro.hk_balancesheet(ts_code=symbol)
     else:
         balancesheet_df = pro.balancesheet(ts_code=symbol)
+        balancesheet_df = balancesheet_df.drop_duplicates(subset='end_date', keep='first')
+
     
     return balancesheet_df

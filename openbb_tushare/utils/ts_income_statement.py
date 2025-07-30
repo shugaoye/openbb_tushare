@@ -43,5 +43,6 @@ def get_tushare_data(
         income_statement_df = pro.hk_income(ts_code=symbol)
     else:
         income_statement_df = pro.income(ts_code=symbol)
+        income_statement_df = income_statement_df.drop_duplicates(subset='end_date', keep='first')
     
     return income_statement_df

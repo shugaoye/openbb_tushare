@@ -30,7 +30,7 @@ def get_cash_flow(
         if limit is not None:
             data = data.head(limit)
         
-        return data
+        return processing_data(data)
 def get_tushare_data(
         symbol: str,
         period: str = "annual",
@@ -43,5 +43,20 @@ def get_tushare_data(
         cash_flow_df = pro.hk_cashflow(ts_code=symbol)
     else:
         cash_flow_df = pro.cashflow(ts_code=symbol)
+        cash_flow_df = cash_flow_df.drop_duplicates(subset='end_date', keep='first')
     
     return cash_flow_df
+
+def processing_data(cash_flow_df: pd.DataFrame) -> pd.DataFrame:
+    from openbb_tushare.utils.helpers import get_fiscal_period
+    logger.info("Processing cash flow data")
+    selected_columns = cash_flow_df[['n_cashflow_act', 'n_cashflow_inv_act', 'n_cash_flows_fnc_act']]
+    selected_columns = selected_columns.rename(columns={'n_cashflow_act':'net_cash_from_operating_activities', 
+                                                        'n_cashflow_inv_act':'net_cash_from_investing_activities',
+                                                        'n_cash_flows_fnc_act':'net_cash_from_financing_activities'})
+
+    # Extract year from end_date and create fiscal_year column
+    selected_columns.loc[:, 'fiscal_year'] = pd.to_datetime(cash_flow_df['end_date']).dt.year
+    selected_columns.loc[:, 'period_ending'] = pd.to_datetime(cash_flow_df['end_date'])
+    selected_columns.loc[:, 'fiscal_period'] = cash_flow_df['end_type'].apply(get_fiscal_period)
+    return selected_columns
