@@ -1,0 +1,47 @@
+import logging
+import pandas as pd
+import tushare as ts
+from typing import Optional, Literal
+from openbb_tushare.utils.tools import setup_logger
+from openbb_tushare.utils.helpers import get_api_key
+from openbb_tushare.utils.tools import normalize_symbol
+
+setup_logger()
+logger = logging.getLogger(__name__)
+
+def get_cash_flow(
+        symbol: str, 
+        period: Literal["annual", "quarter"] = "annual",
+        limit: Optional[int] = 5,
+        use_cache: bool = True,
+        api_key : str = ""
+    ) -> pd.DataFrame:
+    from openbb_tushare.utils.blob_cache import BlobCache
+    cache = BlobCache(table_name="cash_flow")
+    data = cache.load_cached_data(symbol, "quarter", use_cache, get_tushare_data, api_key=api_key)
+    if data is None:
+        return pd.DataFrame()
+    else:
+        if period == "annual":
+            # Filter rows where end_date ends with "1231"
+            data = data[data['end_date'].astype(str).str.endswith('1231')]
+
+        # Apply limit if specified
+        if limit is not None:
+            data = data.head(limit)
+        
+        return data
+def get_tushare_data(
+        symbol: str,
+        period: str = "annual",
+        api_key : Optional[str] = ""
+    ) -> pd.DataFrame:
+    tushare_api_key = get_api_key(api_key)
+    pro = ts.pro_api(tushare_api_key)
+    _, _, market = normalize_symbol(symbol)
+    if market == 'HK':
+        cash_flow_df = pro.hk_cashflow(ts_code=symbol)
+    else:
+        cash_flow_df = pro.cashflow(ts_code=symbol)
+    
+    return cash_flow_df

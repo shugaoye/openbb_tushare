@@ -32,7 +32,7 @@ def get_dividends(
     """
     from openbb_tushare.utils.blob_cache import BlobCache
     cache = BlobCache(table_name="historical_dividends")
-    data = cache.load_cached_data(symbol, "annual", use_cache, get_tushare_data)
+    data = cache.load_cached_data(symbol, "annual", use_cache, get_tushare_data, api_key=api_key)
     if start_date is None or end_date is None:
         return data
     else:

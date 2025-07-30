@@ -6,7 +6,7 @@ import pickle
 import logging
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
-from openbb_akshare.utils.tools import setup_logger
+from openbb_tushare.utils.tools import setup_logger
 
 CACHE_TTL = 60*60  # 60 seconds
 setup_logger()
@@ -50,7 +50,7 @@ class BlobCache:
         self.table_name = table_name
         self.conn = None
         if db_path is None:
-            from openbb_akshare.utils import get_cache_path
+            from openbb_tushare.utils import get_cache_path
             self.db_path = get_cache_path()
         else:
             os.makedirs(db_path, exist_ok=True)
@@ -73,7 +73,7 @@ class BlobCache:
 
     def load_cached_data(self, symbol:str, report_type, use_cache, get_data, api_key : str = "", *args, **kwargs):
         """Load cached data from SQLite cache or generate new data."""
-        from openbb_akshare.utils.tools import normalize_symbol
+        from openbb_tushare.utils.tools import normalize_symbol
         symbol_b, symbol_f, market = normalize_symbol(symbol)
         key = f"{market}{symbol_b}{report_type}"
         now = time.time()
