@@ -4,13 +4,34 @@
 
 OpenBB虽支持多个数据源，但中国区（含香港）金融数据获取主要依赖Yahoo Finance。该平台作为免费基础数据源虽能满足基本需求，但对中港市场的覆盖深度仍显不足。更关键的是，中国内地用户需借助VPN方可访问此服务，形成显著使用门槛。
 
-要查询A股和港股数据，OpenBB亟待完善本地化金融数据源的接入。A股和港股数据，付费的主流方案包括Wind、东方财富Choice和同花顺iFind（主要面向机构客户）；开源数据源则以Tushare或AKShare为主要替代方案。Tushare已成为国内Python生态中数据覆盖最全面、更新最及时、开发者体验最优的金融数据库之一。
+要查询A股和港股数据，OpenBB亟待完善本地化金融数据源的接入。A股和港股数据，付费的主流方案包括Wind、东方财富Choice和同花顺iFind（主要面向机构客户）；开源数据源则以Tushare或AKShare为主要替代方案。
+
+Tushare 与 AKShare 作为两款重要的金融数据工具，具备各自鲜明的特点。为清晰展示其差异，下表对二者进行了系统性的比较和总结。
+
+| 特性     | Tushare         | AKShare       |
+| ------ | --------------- | ------------- |
+| 是否免费   | 免费版功能受限，高级功能需积分 | 完全免费          |
+| 数据质量   | 高，标准化           | 中等，依赖源站，需清洗   |
+| 数据覆盖范围 | 广，偏重A股和宏观       | 非常广，含加密货币、外盘等 |
+| 接口稳定性  | 高（Pro API）      | 中等（受源站影响）     |
+| 文档完整性  | 高，详细            | 中等，部分需看源码     |
+| 社区活跃度  | 高，成熟            | 高，更新快         |
+| 学习成本   | 低               | 低到中           |
+| 适合用户   | 企业、专业研究者        | 学生、个人开发者、初学者  |
+| 实时数据支持 | 支持（需高级权限）       | 部分支持，依赖源站     |
+| 维护模式   | 个人主导            | 社区驱动          |
+
+当前已有两个独立项目，分别开发了针对 Tushare 和 AKShare 的 OpenBB 数据源扩展。
+
+- Tushare: https://github.com/finanalyzer/openbb_tushare
+
+- AKShare: https://github.com/finanalyzer/openbb_akshare
 
 `openbb_tushare`项目作为 OpenBB 的数据源扩展，可实现 Tushare 数据在 OpenBB 平台的无缝接入。以下为详细使用指南：
 
 ## 💻 环境搭建与安装流程
 
-作为开发者，我们主要通过OpenBB Platform CLI与平台交互。要集成Tushare数据源，需按以下步骤配置开发环境：
+作为开发者，我们主要通过Python API接口和OpenBB Platform CLI与平台交互。要集成Tushare数据源，需按以下步骤配置开发环境：
 
 1. 创建Python虚拟环境
 
@@ -55,6 +76,27 @@ OpenBB虽支持多个数据源，但中国区（含香港）金融数据获取�
    ```bash
    python -c "import openbb; openbb.build()"
    ```
+
+## Tushare token的配置
+
+由于 Tushare 要求使用 token 访问数据源，使用前需完成 token 配置。数据源的 token 支持以下两种配置方式：
+
+1.  通过OpenBB Hub配置
+
+2.  本地环境配置
+
+具体操作流程请参阅官方文档：https://docs.openbb.co/platform/settings/user_settings/api_keys
+
+本文简要说明在本地环境配置 Tushare token 的方法：OpenBB 的用户偏好设置及 token 均存储于本地路径 ~/.openbb_platform/，并以 JSON 格式保存于 user_settings.json 文件，示例如下：
+
+```JSON
+{
+  "credentials": {
+    "fmp_api_key": "REPLACE",
+    "tushare_api_key": "REPLACE"
+  }
+}
+```
 
 ## 🚀 使用 Tushare 数据源
 
