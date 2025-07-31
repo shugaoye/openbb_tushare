@@ -14,7 +14,7 @@ def get_cash_flow(
         period: Literal["annual", "quarter"] = "annual",
         limit: Optional[int] = 5,
         use_cache: bool = True,
-        api_key : str = ""
+        api_key : Optional[str] = ""
     ) -> pd.DataFrame:
     from openbb_tushare.utils.blob_cache import BlobCache
     cache = BlobCache(table_name="cash_flow")
