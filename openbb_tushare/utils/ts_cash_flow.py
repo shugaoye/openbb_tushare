@@ -49,7 +49,7 @@ def get_tushare_data(
 
 def processing_data(cash_flow_df: pd.DataFrame) -> pd.DataFrame:
     from openbb_tushare.utils.helpers import get_fiscal_period
-    logger.info("Processing cash flow data")
+    # logger.info("Processing cash flow data")
     selected_columns = cash_flow_df[['n_cashflow_act', 'n_cashflow_inv_act', 'n_cash_flows_fnc_act']]
     selected_columns = selected_columns.rename(columns={'n_cashflow_act':'net_cash_from_operating_activities', 
                                                         'n_cashflow_inv_act':'net_cash_from_investing_activities',

@@ -30,7 +30,7 @@ def get_income_statement(
         if limit is not None:
             data = data.head(limit)
         
-        return data
+        return processing_data(data)
 def get_tushare_data(
         symbol: str,
         period: str = "annual",
@@ -46,3 +46,15 @@ def get_tushare_data(
         income_statement_df = income_statement_df.drop_duplicates(subset='end_date', keep='first')
     
     return income_statement_df
+
+def processing_data(income_statement_df: pd.DataFrame) -> pd.DataFrame:
+    from openbb_tushare.utils.helpers import get_fiscal_period
+    # logger.info("Processing income statement data")
+    selected_columns = income_statement_df[['total_revenue', 'n_income_attr_p']]
+    selected_columns = selected_columns.rename(columns={'n_income_attr_p':'net_income'})
+
+    # Extract year from end_date and create fiscal_year column
+    selected_columns.loc[:, 'fiscal_year'] = pd.to_datetime(income_statement_df['end_date']).dt.year
+    selected_columns.loc[:, 'period_ending'] = pd.to_datetime(income_statement_df['end_date'])
+    selected_columns.loc[:, 'fiscal_period'] = income_statement_df['end_type'].apply(get_fiscal_period)
+    return selected_columns

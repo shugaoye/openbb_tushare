@@ -30,7 +30,7 @@ def get_balance_sheet(
         if limit is not None:
             data = data.head(limit)
         
-        return data
+        return processing_data(data)
 def get_tushare_data(
         symbol: str,
         period: str = "annual",
@@ -47,3 +47,15 @@ def get_tushare_data(
 
     
     return balancesheet_df
+
+def processing_data(balancesheet_df: pd.DataFrame) -> pd.DataFrame:
+    from openbb_tushare.utils.helpers import get_fiscal_period
+    # logger.info("Processing balance sheet data")
+    selected_columns = balancesheet_df[['total_assets', 'total_liab']]
+    selected_columns = selected_columns.rename(columns={'total_liab':'total_liabilities'})
+
+    # Extract year from end_date and create fiscal_year column
+    selected_columns.loc[:, 'fiscal_year'] = pd.to_datetime(balancesheet_df['end_date']).dt.year
+    selected_columns.loc[:, 'period_ending'] = pd.to_datetime(balancesheet_df['end_date'])
+    selected_columns.loc[:, 'fiscal_period'] = balancesheet_df['end_type'].apply(get_fiscal_period)
+    return selected_columns
