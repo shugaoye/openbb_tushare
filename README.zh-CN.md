@@ -77,13 +77,13 @@ Tushare 与 AKShare 作为两款重要的金融数据工具，具备各自鲜明
    python -c "import openbb; openbb.build()"
    ```
 
-## Tushare token的配置
+## Tushare 令牌(token)的配置
 
 由于 Tushare 要求使用 token 访问数据源，使用前需完成 token 配置。数据源的 token 支持以下两种配置方式：
 
-1.  通过OpenBB Hub配置
+1. 通过OpenBB Hub配置
 
-2.  本地环境配置
+2. 本地环境配置
 
 具体操作流程请参阅官方文档：https://docs.openbb.co/platform/settings/user_settings/api_keys
 
@@ -98,66 +98,140 @@ Tushare 与 AKShare 作为两款重要的金融数据工具，具备各自鲜明
 }
 ```
 
+在这个文件里添加自己的Tushare token来访问Tushare的数据接口。
+
 ## 🚀 使用 Tushare 数据源
 
-### 案例 1：查询 A 股公司动态（以万科为例）
+接下来将通过获取股票历史数据与财务数据为例，来讲述使用 Tushare 数据源的实际应用流程。同样的功能将分别用Jupyter Notebook和OpenBB CLI来分别演示。
 
-**Jupyter Notebook 代码示例**：
+### 检查Tushare扩展的安装和版本
+
+在实际使用之前，我们可以先确认一下环境的安装和配置情况。
 
 ```Python
 from openbb import obb
-messages = obb.news.company("000002", provider="tushare")
-for result in messages.results:
-    print(f"{result.title}")
+
+obj = obb.reference["info"]["extensions"]["openbb_provider_extension"]
+modules = [item for item in obj if "tushare" in item]
+modules.append([item for item in obj if "akshare" in item][0])
+print(modules)
+```
+
+输出:
+
+```
+['openbb_tushare@0.2.4', 'openbb_akshare@0.4.46']
+```
+
+如上所述，代码已成功验证 openbb_tushare 和 openbb_akshare 扩展的版本配置。环境检查无误后，即可启用 OpenBB 平台和 Tushare 数据源。
+
+### 获取股票历史数据（以中国银行为例）
+
+如前所述，通过 Python 脚本和OpenBB CLI均可通过 OpenBB 对 Tushare 数据源的访问。Python 代码示例将在 Jupyter Notebook 环境中运行，命令行操作则采用 Windows 系统执行。
+
+#### Jupyter Notebook 获取股票历史数据
+
+```Python
+import pandas as pd
+
+symbol = "601988.SH"
+tickers = {"601988.SH": "Bank of China", "601006.SH": "Daqin Railway Co., Ltd."}
+start = "2025-06-01"
+end = "2025-07-31"
+data = obb.equity.price.historical(symbol=symbol, start_date=start, end_date=end, 
+                                   provider="tushare")
+daily = data.to_dataframe()
+daily.index = pd.to_datetime(daily.index)  # Convert index to datetime
+daily.head()
 ```
 
 执行结果：
 
 ```plaintext
-开源证券发布万科A研报，公司信息更新报告：销售均价有所提升，股东持续借款提供支持
-万科A出售2086万股库存股，金额1.36亿元
-万科A：已完成所有A股库存股出售 所得资金4.79亿元
-...
+	open	high	low	close	volume	amount	change	change_percent	pre_close
+date									
+2025-06-03	5.49	5.54	5.45	5.52	3290209.80	1807538.711	0.00	0.0000	5.52
+2025-06-04	5.51	5.52	5.49	5.50	1653467.01	909604.517	-0.02	-0.3623	5.52
+2025-06-05	5.50	5.51	5.46	5.47	2606604.23	1426854.477	-0.03	-0.5455	5.50
+2025-06-06	5.47	5.49	5.43	5.45	2649578.38	1443638.857	-0.02	-0.3656	5.47
+2025-06-09	5.44	5.46	5.41	5.43	2512503.43	1361861.754	-0.02	-0.3670	5.45
 ```
 
-**命令行查询方式**：
-
-```bash
-openbb
-2025 Jun 26, 03:11 (🦋) /news/ $ company --symbol 000002 --provider tushare
-```
-
-输入上述命令，我们可以看到下面的结果。OpenBB CLI的结果会显示在一个WebView里，如下图所示：
-
-![openbb04](docs/images/openbb04.png)
-
-### 案例 2：获取港股历史股价（以香港电讯为例）
-
-**命令行查询**:
-
-Tushare也提供港股数据，我们可以使用下面的命令来查询"香港电讯"的股价历史。
-
-```
-2025 Jun 26, 03:28 (🦋) /equity/price/ $ historical --symbol 06823 --provider tushare
-```
-
-我们可以看到下面的WebView输出：![openbb05](docs/images/openbb05.png)
-
-**Jupyter Notebook 代码示例**：
-
-同样的，我们也可以用代码来查询"香港电讯"的股价，如下：
+执行前述代码后，已成功获取 2025 年 6 月 1 日至 2025 年 7 月 31 日期间的历史股价数据。该数据集可进一步可视化生成 K 线图，展示如下：
 
 ```Python
-from openbb import obb
-prices = obb.equity.price.historical(symbol='06823', start_date="2025-06-01", end_date="2025-06-10", provider="tushare")
-prices.results[0].date, prices.results[0].open, prices.results[0].close, prices.results[0].high, prices.results[0].low, prices.results[0].volume
+from openbb_demo import plot_candle
+plot_candle(daily, title=tickers[symbol])
 ```
 
-输出示例：
+![sh601988](docs/images/sh601988chart.png)
+
+#### 使用OpenBB CLI查询历史股价
+
+若需在 OpenBB 终端重复前述操作流程，可通过执行以下命令启动 OpenBB 命令行环境：
+
+```PowerShell
+C:\> openbb
+```
+
+启动OpenBB命令行环境后，可以执行下面命令。
+
+```bash
+2025 Aug 01, 03:48 (🦋) /equity/price/ $ historical --symbol 601988.SH --start_date 2025-06-01 --end_date 2025-07-31 --
+provider tushare
+```
+
+执行该命令后，OpenBB 终端将自动在 WebView 视图中渲染输出结果，如下图所示：
+
+![sh601988](docs/images/sh601988.png)
+
+### 获取股票财务数据（以中国银行为例）
+
+#### 使用Jupyter Notebook 获取中国银行财务数据
+
+股票基本面分析通常涵盖三大核心财务报表：利润表、资产负债表及现金流量表。
+
+获取中国银行（Bank of China）利润表数据可执行下述代码：
+
+```Python
+income_obj = obb.equity.fundamental.income(symbol=symbol, provider="tushare")
+income_df = income_obj.to_dataframe()
+income_df.head()
+```
+
+输出：
 
 ```
-(datetime.date(2025, 6, 2), 11.28, 11.3, 11.3, 11.14, 10308375)
+	period_ending	fiscal_period	fiscal_year	total_revenue	net_income
+0	2024-12-31	FY	2024	6.300900e+11	2.527190e+11
+1	2023-12-31	FY	2023	6.228890e+11	2.463710e+11
+2	2022-12-31	FY	2022	6.180090e+11	2.375040e+11
+3	2021-12-31	FY	2021	6.055590e+11	2.273390e+11
+4	2020-12-31	FY	2020	5.655310e+11	2.050960e+11
 ```
+
+该财务数据可进一步转化为柱状图进行可视化展示，如下所示：
+
+```Python
+income_df.plot(x='fiscal_year', y=['total_revenue', 'net_income'],
+    kind='bar',
+    figsize=(10, 5),
+    title=tickers[symbol])
+```
+
+![sh601988bar](docs/images/sh601988bar.png)
+
+#### 使用OpenBB CLI获取中国银行财务数据:
+
+继续通过 OpenBB 终端获取中国银行财务数据。
+
+```
+2025 Aug 01, 04:47 (🦋) /equity/fundamental/ $ income --symbol 601988.SH --provider tushare
+```
+
+其输出结果将实时渲染于 WebView 交互界面，如下图所示：
+
+![sh601988](docs/images/sh601988income.png)
 
 ## 🌟 openbb_tushare 项目生态
 
@@ -167,7 +241,7 @@ prices.results[0].date, prices.results[0].open, prices.results[0].close, prices.
 
 - GitHub：https://github.com/finanalyzer/openbb_tushare
 
-- GitCode（国内镜像）：https://gitcode.com/finanalyzer/openbb_tushare
+- GitCode：https://gitcode.com/finanalyzer/openbb_tushare
 
 **参与方式**：
 
