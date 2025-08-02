@@ -27,7 +27,7 @@ Tushare 与 AKShare 作为两款重要的金融数据工具，具备各自鲜明
 
 - AKShare: https://github.com/finanalyzer/openbb_akshare
 
-`openbb_tushare`项目作为 OpenBB 的数据源扩展，可实现 Tushare 数据在 OpenBB 平台的无缝接入。以下为详细使用指南：
+本文主要讲述如何使用Tushare作为OpennBB数据源。如果要了解如何使用AKShare作为OpenBB数据源，请参阅文章[如何使用AKShare作为OpenBB的数据源](https://blog.csdn.net/qq_29953771/article/details/149118462)。`openbb_tushare`项目作为 OpenBB 的数据源扩展，可实现 Tushare 数据在 OpenBB 平台的无缝接入。
 
 ## 💻 环境搭建与安装流程
 
@@ -102,7 +102,7 @@ Tushare 与 AKShare 作为两款重要的金融数据工具，具备各自鲜明
 
 ## 🚀 使用 Tushare 数据源
 
-接下来将通过获取股票历史数据与财务数据为例，来讲述使用 Tushare 数据源的实际应用流程。同样的功能将分别用Jupyter Notebook和OpenBB CLI来分别演示。
+接下来将通过获取股票历史数据与财务数据为例，来讲述使用 Tushare 数据源的实际应用流程。同样的功能将分别用Jupyter Notebook和OpenBB CLI来演示。
 
 ### 检查Tushare扩展的安装和版本
 
