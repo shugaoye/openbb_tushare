@@ -1,8 +1,10 @@
 # Add these imports at the top
-import os
-import time
-from datetime import datetime, timedelta, timezone
-
+from datetime import (
+    date as dateType,
+    datetime,
+    timedelta
+)
+from typing import Optional
 # support logging
 import logging
 from logging.handlers import RotatingFileHandler
@@ -163,6 +165,32 @@ def get_timestamp(v: int) -> int:
     else:
         raise ValueError("Timestamp is before the Unix epoch (1970-01-01)")
 
+def last_closing_day(today:Optional[dateType]=None) -> dateType:
+    from chinese_calendar import is_workday
+    if today is None:
+        today = datetime.today().date()
+    today -= timedelta(days=1)
+    while not (is_workday(today) and today.weekday() < 5):
+        today -= timedelta(days=1)
+    return today
+
+def get_valid_date(input_date) -> dateType:
+    """ 
+    Convert input date to a valid dateType object.
+    Args:
+        input_date (str, dateType, datetime): Input date in string format (YYYY-MM-DD), dateType, or datetime.
+    """
+    temp_dt = datetime.now().date()
+    if isinstance(input_date, str):
+        temp_dt = datetime.strptime(input_date, "%Y-%m-%d")
+    elif isinstance(input_date, dateType):
+        temp_dt = input_date
+    else:
+        raise ValueError(f"input_date {type(input_date)} must be a string or datetime object")
+    
+    if isinstance(temp_dt, datetime):
+        temp_dt = temp_dt.date()
+    return temp_dt
 
 # 示例调用
 if __name__ == "__main__":
