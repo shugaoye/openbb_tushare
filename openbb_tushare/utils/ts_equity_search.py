@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 import tushare as ts
 from openbb_tushare.utils.table_cache import TableCache
-from openbb_tushare.utils.tools import setup_logger
+from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
 
 TABLE_SCHEMA = {

@@ -1,8 +1,6 @@
 import sqlite3
 from typing import Optional, List, Dict, Any
-from pathlib import Path
 import pandas as pd
-from datetime import date
 
 class TableCache:
     # Extract table schema into a class variable for dynamic modification
@@ -13,7 +11,7 @@ class TableCache:
         self.table_schema = table_schema
         self.primary_key = primary_key
         if db_path is None:
-            from openbb_tushare.utils import get_cache_path
+            from mysharelib import get_cache_path
             self.db_path = get_cache_path()
         else:
             self.db_path = db_path

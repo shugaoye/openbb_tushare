@@ -6,9 +6,9 @@ from datetime import (
     datetime,
 )
 from typing import Optional, Union
-from openbb_tushare.utils.tools import setup_logger
+from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
-from openbb_tushare.utils.tools import normalize_symbol
+from mysharelib.tools import normalize_symbol
 from openbb_tushare.utils.table_cache import TableCache
 
 setup_logger()

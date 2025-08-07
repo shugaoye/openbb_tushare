@@ -6,9 +6,9 @@ from datetime import (
     datetime,
 )
 from typing import Optional, Union
-from openbb_tushare.utils.tools import setup_logger
+from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
-from openbb_tushare.utils.tools import normalize_symbol
+from mysharelib.tools import normalize_symbol
 from openbb_tushare.utils.table_cache import TableCache
 
 setup_logger()
@@ -30,7 +30,7 @@ def get_dividends(
         use_cache (bool): Whether to use cached data.
         api_key (str): Tushare API key.
     """
-    from openbb_tushare.utils.blob_cache import BlobCache
+    from mysharelib.blob_cache import BlobCache
     cache = BlobCache(table_name="historical_dividends")
     data = cache.load_cached_data(symbol, "annual", use_cache, get_tushare_data, api_key=api_key)
     if start_date is None or end_date is None:

@@ -16,7 +16,7 @@ from openbb_core.provider.standard_models.historical_dividends import (
 )
 
 import logging
-from openbb_tushare.utils.tools import setup_logger
+from mysharelib.tools import setup_logger
 setup_logger()
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,6 @@ class TushareHistoricalDividendsFetcher(
     ) -> List[Dict]:
         """Extract the raw data from Tushare."""
         # pylint: disable=import-outside-toplevel
-        from openbb_tushare.utils.tools import normalize_symbol
         from openbb_tushare.utils.ts_historical_dividends import get_dividends
         api_key = credentials.get("tushare_api_key") if credentials else ""
 

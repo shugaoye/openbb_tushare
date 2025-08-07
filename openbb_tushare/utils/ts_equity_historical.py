@@ -6,9 +6,9 @@ from datetime import (
     datetime,
 )
 from typing import Optional, Union
-from openbb_tushare.utils.tools import setup_logger
+from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
-from openbb_tushare.utils.tools import normalize_symbol
+from mysharelib.tools import normalize_symbol
 from openbb_tushare.utils.table_cache import TableCache
 
 setup_logger()
@@ -49,7 +49,7 @@ def get_from_cache(
     Returns:
         DataFrame: DataFrame containing historical equity data.
     """
-    from openbb_tushare.utils.tools import last_closing_day, get_valid_date
+    from mysharelib.tools import last_closing_day, get_valid_date
 
     # Retrieve data from cache first
     symbol_b, symbol_f, market = normalize_symbol(ts_code)
@@ -108,7 +108,7 @@ def check_cache(symbol: str,
     Check if the cache contains the latest data for the given symbol.
     """
     from openbb_tushare.utils.ak_helpers import get_list_date
-    from openbb_tushare.utils.tools import last_closing_day
+    from mysharelib.tools import last_closing_day
     
     start = get_list_date(symbol)
     end = last_closing_day()

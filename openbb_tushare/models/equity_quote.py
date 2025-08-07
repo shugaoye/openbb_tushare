@@ -12,7 +12,7 @@ from openbb_core.provider.standard_models.equity_quote import (
 )
 from pydantic import Field
 import logging
-from openbb_tushare.utils.tools import setup_logger, normalize_symbol
+from mysharelib.tools import setup_logger, normalize_symbol
 
 setup_logger()
 logger = logging.getLogger(__name__)
