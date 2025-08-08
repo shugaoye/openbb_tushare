@@ -4,8 +4,10 @@ import tushare as ts
 from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
 from mysharelib.tools import normalize_symbol
+from openbb_tushare import project_name
 
-setup_logger()
+setup_logger(project_name)
+
 logger = logging.getLogger(__name__)
 
 def get_one(ts_code : str, use_cache: bool = True, api_key : str = "") -> pd.DataFrame:

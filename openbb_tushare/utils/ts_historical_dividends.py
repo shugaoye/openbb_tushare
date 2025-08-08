@@ -10,8 +10,9 @@ from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
 from mysharelib.tools import normalize_symbol
 from openbb_tushare.utils.table_cache import TableCache
+from openbb_tushare import project_name
 
-setup_logger()
+setup_logger(project_name)
 logger = logging.getLogger(__name__)
 
 def get_dividends(
@@ -31,7 +32,8 @@ def get_dividends(
         api_key (str): Tushare API key.
     """
     from mysharelib.blob_cache import BlobCache
-    cache = BlobCache(table_name="historical_dividends")
+    
+    cache = BlobCache(table_name="historical_dividends", project=project_name)
     data = cache.load_cached_data(symbol, "annual", use_cache, get_tushare_data, api_key=api_key)
     if start_date is None or end_date is None:
         return data

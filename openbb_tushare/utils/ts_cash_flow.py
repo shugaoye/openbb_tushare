@@ -5,8 +5,10 @@ from typing import Optional, Literal
 from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
 from mysharelib.tools import normalize_symbol
+from openbb_tushare import project_name
 
-setup_logger()
+setup_logger(project_name)
+
 logger = logging.getLogger(__name__)
 
 def get_cash_flow(
@@ -17,7 +19,7 @@ def get_cash_flow(
         api_key : Optional[str] = ""
     ) -> pd.DataFrame:
     from mysharelib.blob_cache import BlobCache
-    cache = BlobCache(table_name="cash_flow")
+    cache = BlobCache(table_name="cash_flow", project=project_name)
     data = cache.load_cached_data(symbol, "quarter", use_cache, get_tushare_data, api_key=api_key)
     if data is None:
         return pd.DataFrame()

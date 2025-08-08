@@ -5,7 +5,10 @@ import tushare as ts
 from openbb_tushare.utils.table_cache import TableCache
 from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
+from openbb_tushare import project_name
 
+setup_logger(project_name)
+logger = logging.getLogger(__name__)
 
 TABLE_SCHEMA = {
     "ts_code": "TEXT PRIMARY KEY",    # Unique identifier (TS代码)
@@ -23,9 +26,6 @@ TABLE_SCHEMA = {
     "exp_date": "TEXT",                # Expiry date (终止日期, YYYYMMDD format)
     "currency": "TEXT"                 # Currency type (货币)
 }
-
-setup_logger()
-logger = logging.getLogger(__name__)
 
 def get_available_indices(use_cache: bool = True, api_key : str = "") -> pd.DataFrame:
     tushare_api_key = get_api_key(api_key)

@@ -17,7 +17,9 @@ from openbb_core.provider.standard_models.historical_dividends import (
 
 import logging
 from mysharelib.tools import setup_logger
-setup_logger()
+from openbb_tushare import project_name
+
+setup_logger(project_name)
 logger = logging.getLogger(__name__)
 
 class TushareHistoricalDividendsQueryParams(HistoricalDividendsQueryParams):

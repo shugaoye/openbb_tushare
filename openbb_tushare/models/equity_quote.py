@@ -13,8 +13,9 @@ from openbb_core.provider.standard_models.equity_quote import (
 from pydantic import Field
 import logging
 from mysharelib.tools import setup_logger, normalize_symbol
+from openbb_tushare import project_name
 
-setup_logger()
+setup_logger(project_name)
 logger = logging.getLogger(__name__)
 
 class TushareEquityQuoteQueryParams(EquityQuoteQueryParams):

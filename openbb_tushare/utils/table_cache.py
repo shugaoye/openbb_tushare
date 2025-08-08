@@ -12,7 +12,8 @@ class TableCache:
         self.primary_key = primary_key
         if db_path is None:
             from mysharelib import get_cache_path
-            self.db_path = get_cache_path()
+            from openbb_tushare import project_name
+            self.db_path = get_cache_path(project_name)
         else:
             self.db_path = db_path
         self._ensure_db_exists()
