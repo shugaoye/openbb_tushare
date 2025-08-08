@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 import tushare as ts
-from openbb_tushare.utils.table_cache import TableCache
+from mysharelib.table_cache import TableCache
 from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
 from openbb_tushare import project_name
@@ -35,7 +35,7 @@ TABLE_SCHEMA = {
 def get_symbols(use_cache: bool = True, api_key : str = "") -> pd.DataFrame:
     tushare_api_key = get_api_key(api_key)
 
-    cache = TableCache(TABLE_SCHEMA, table_name="symbols", primary_key="ts_code")
+    cache = TableCache(TABLE_SCHEMA, project=project_name, table_name="symbols", primary_key="ts_code")
     if use_cache:
         data = cache.read_dataframe()
         if not data.empty:

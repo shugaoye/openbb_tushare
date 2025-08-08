@@ -9,7 +9,7 @@ from typing import Optional, Union
 from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
 from mysharelib.tools import normalize_symbol
-from openbb_tushare.utils.table_cache import TableCache
+from mysharelib.table_cache import TableCache
 from openbb_tushare import project_name
 
 setup_logger(project_name)
@@ -118,8 +118,7 @@ def get_equity_profile(ts_code: str, api_key: str = "", use_cache: bool = True) 
     Returns:
         DataFrame: DataFrame containing equity profile data.
     """
-
-    cache = TableCache(EQUITY_INFO_SCHEMA, table_name="equity_profile", primary_key="ts_code")
+    cache = TableCache(EQUITY_INFO_SCHEMA, project=project_name, table_name="equity_profile", primary_key="ts_code")
     if use_cache:
         filters = {'ts_code': ts_code}
         data = cache.read_rows(filters)

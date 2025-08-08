@@ -9,7 +9,7 @@ from typing import Optional, Union
 from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
 from mysharelib.tools import normalize_symbol
-from openbb_tushare.utils.table_cache import TableCache
+from mysharelib.table_cache import TableCache
 from openbb_tushare import project_name
 
 setup_logger(project_name)
@@ -51,11 +51,11 @@ def get_from_cache(
     Returns:
         DataFrame: DataFrame containing historical equity data.
     """
-    from mysharelib.tools import last_closing_day, get_valid_date
+    from mysharelib.tools import get_valid_date
 
     # Retrieve data from cache first
     symbol_b, symbol_f, market = normalize_symbol(ts_code)
-    cache = TableCache(EQUITY_HISTORY_SCHEMA, table_name=f"{market}{symbol_b}", primary_key="date")
+    cache = TableCache(EQUITY_HISTORY_SCHEMA, project=project_name, table_name=f"{market}{symbol_b}", primary_key="date")
     
     start_dt = get_valid_date(start_date)
     end_dt = get_valid_date(end_date)

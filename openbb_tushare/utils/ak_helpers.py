@@ -9,7 +9,6 @@ from datetime import (
 import pandas as pd
 import akshare as ak
 from mysharelib.tools import normalize_symbol
-from openbb_tushare.utils.table_cache import TableCache
 
 def get_list_date(code: str) -> dateType:
     """

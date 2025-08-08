@@ -2,14 +2,11 @@ import logging
 import pandas as pd
 import tushare as ts
 from datetime import (
-    date as dateType,
-    datetime,
+    date as dateType
 )
-from typing import Optional, Union
+from typing import Optional
 from mysharelib.tools import setup_logger
 from openbb_tushare.utils.helpers import get_api_key
-from mysharelib.tools import normalize_symbol
-from openbb_tushare.utils.table_cache import TableCache
 from openbb_tushare import project_name
 
 setup_logger(project_name)
